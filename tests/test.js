@@ -1,13 +1,13 @@
 import { use, expect } from "chai";
 import chaiHttp from "chai-http";
-import app from "../app.js";
+import { createAPI } from "../routes/api.js";
 
 const chai = use(chaiHttp);
 
 describe("Test retrieve items", () => {
   it("Retreive all items", function (done) {
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .get("/items/")
       .end((err, res) => {
         expect(res).to.have.property("body");
@@ -17,7 +17,7 @@ describe("Test retrieve items", () => {
   });
   it("Retreive items with name", function (done) {
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .get("/items/")
       .query({ name: "hammer" })
       .end((err, res) => {
@@ -28,7 +28,7 @@ describe("Test retrieve items", () => {
   });
   it("Retreive items in price range", function (done) {
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .get("/items/")
       .query({ priceGT: 20, priceLTE: 25 })
       .end((err, res) => {
@@ -42,7 +42,7 @@ describe("Test retrieve items", () => {
 describe("Test retrieve item by id", () => {
   it("Retreive non-existent item", function (done) {
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .get("/items/15")
       .end((err, res) => {
         expect(res).to.have.status(404);
@@ -60,7 +60,7 @@ describe("Test retrieve item by id", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .get("/items/1")
       .end((err, res) => {
         expect(res).to.have.property("body");
@@ -83,7 +83,7 @@ describe("Test list a new item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items")
       .set("Content-Type", "application/json")
       .send(newItem)
@@ -105,7 +105,7 @@ describe("Test list a new item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items")
       .set("Content-Type", "application/json")
       .send(newItem)
@@ -127,7 +127,7 @@ describe("Test list a new item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items")
       .set("Content-Type", "application/json")
       .send(newItem)
@@ -155,7 +155,7 @@ describe("Test rent an item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items/1/rentals")
       .set("Content-Type", "application/json")
       .send(rentalDates)
@@ -174,7 +174,7 @@ describe("Test rent an item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items/1/rentals")
       .set("Content-Type", "application/json")
       .send(rentalDates)
@@ -195,7 +195,7 @@ describe("Test rent an item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items/1/rentals")
       .set("Content-Type", "application/json")
       .send(rentalDates)
@@ -216,7 +216,7 @@ describe("Test rent an item", () => {
     };
 
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .post("/items/1/rentals")
       .set("Content-Type", "application/json")
       .send(rentalDates)
@@ -238,7 +238,7 @@ describe("Test rent an item", () => {
 describe("Test return a rental", () => {
   it("Return non-existent rental", function (done) {
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .delete("/rentals/15")
       .end((err, res) => {
         expect(res).to.have.status(404);
@@ -250,7 +250,7 @@ describe("Test return a rental", () => {
 
   it("Return an item", function (done) {
     chai.request
-      .execute(app)
+      .execute(createAPI())
       .delete("/rentals/1")
       .end((err, res) => {
         expect(res).to.have.status(204);
