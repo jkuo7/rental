@@ -144,39 +144,17 @@ router.post("/items/:itemId/rentals", (req, res) => {
   if (!isIdUsedByItem(itemId)) {
     return res.status(404).json({ message: "Item not found" });
   }
+
   const requestedItem = getItemById(itemId);
+  const startDateISO = startDate.toISOString();
+  const endDateISO = endDate.toISOString();
 
-  function getInsertionIndex() {
-    let left = 0;
-    let right = requestedItem.rentals.length;
-    while (left < right) {
-      let middle = Math.floor((left + right) / 2);
-      if (getRentalById(requestedItem.rentals[middle]).startDate < startDate) {
-        left = middle + 1;
-      } else {
-        right = middle;
-      }
-    }
-    return left;
-  }
-
-  function isDateRangeAvailable(insertionIndex) {
-    if (
-      insertionIndex &&
-      getRentalById(requestedItem.rentals[insertionIndex - 1]).endDate >
-        startDate
-    ) {
-      return false;
-    }
-
-    if (
-      insertionIndex < requestedItem.rentals.length &&
-      getRentalById(requestedItem.rentals[insertionIndex]).startDate < endDate
-    ) {
-      return false;
-    }
-
-    return true;
+  function isDateRangeAvailable() {
+    return requestedItem.rentals.every(
+      (id) =>
+        getRentalById(id).startDate.localeCompare(endDateISO) >= 0 ||
+        getRentalById(id).endDate.localeCompare(startDateISO) <= 0
+    );
   }
 
   function makeRental() {
@@ -192,10 +170,9 @@ router.post("/items/:itemId/rentals", (req, res) => {
     return newRental;
   }
 
-  const insertionIndex = getInsertionIndex();
-  if (isDateRangeAvailable(insertionIndex)) {
+  if (isDateRangeAvailable()) {
     const newRental = makeRental();
-    requestedItem.rentals.splice(insertionIndex, 0, newRental.rentalId);
+    requestedItem.rentals.push(newRental.rentalId);
     return res.status(201).json(newRental);
   } else {
     return res

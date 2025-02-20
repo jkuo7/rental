@@ -74,8 +74,6 @@ DELETE /rentals/:rentalId
 
 Assuming that users can reserve an item for specific dates ahead of time, I chose to represent items and rentals as separate entities with a one-to-many relation, where each rental contains a foreign key for the associated item.
 
-Each item also maintains an array of rental keys, sorted by start time by using binary search to to locate an insertion point. This is also used to prevent overlapping rental dates by comparing the new rental to its neighbors at the insertion point.
-
 When viewing an item, its rentals are expanded to show the whole rental entity, rather than only the rental keys.
 
 ### Unit Tests
